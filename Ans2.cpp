@@ -1,25 +1,65 @@
 #include <iostream>
+#include <stdexcept>  // For exception handling
 using namespace std;
 
 class BankAccount {
 private:
+    string accountHolder;
+    string accountNumber;
     double balance;
 
 public:
-    BankAccount() : balance(0) {}
-    void deposit(double amount) { balance += amount; }
-    bool withdraw(double amount) {
-        if (amount > balance) return false;
-        balance -= amount;
-        return true;
+    // Constructor to initialize account details
+    BankAccount(string name, string accNum, double initialBalance) {
+        accountHolder = name;
+        accountNumber = accNum;
+        balance = (initialBalance >= 0) ? initialBalance : 0;
     }
-    double getBalance() const { return balance; }
+
+    // Deposit method
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            cout << "Deposited: " << amount << endl;
+        } else {
+            cout << "Invalid deposit amount!" << endl;
+        }
+    }
+
+    // Withdraw method with exception handling for insufficient balance
+    void withdraw(double amount) {
+        if (amount > balance) {
+            cout << "Insufficient balance! Available balance: " << balance << endl;
+        } else if (amount <= 0) {
+            cout << "Invalid withdrawal amount!" << endl;
+        } else {
+            balance -= amount;
+            cout << "Withdrawn: " << amount << endl;
+        }
+    }
+
+    // Method to check current balance
+    double getBalance() const {
+        return balance;
+    }
+
+    // Method to display account details
+    void displayAccountDetails() const {
+        cout << "Account Holder: " << accountHolder << endl;
+        cout << "Account Number: " << accountNumber << endl;
+        cout << "Current Balance: " << balance << endl;
+    }
 };
 
 int main() {
-    BankAccount account;
-    account.deposit(1000);
-    if (account.withdraw(500)) cout << "Withdrawal successful\n";
-    cout << "Balance: " << account.getBalance() << endl;
+    // Create a BankAccount object
+    BankAccount account("John Doe", "1234567890", 1000);
+
+    account.displayAccountDetails();
+    account.deposit(500);
+    account.withdraw(200);
+    account.withdraw(2000);  // Insufficient balance
+    cout << "Final Balance: " << account.getBalance() << endl;
+
     return 0;
 }
