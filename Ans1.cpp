@@ -1,22 +1,48 @@
 #include <iostream>
 using namespace std;
 
-class Calculator {
-public:
-    int calculate(int a, int b) { return a + b; }
-    int calculate(int a, int b, char op) {
-        switch (op) {
-            case '-': return a - b;
-            case '*': return a * b;
-            case '/': return b != 0 ? a / b : 0;
-            default: return 0;
-        }
+// Function overloading for different operations
+int calculate(int a, int b, char op) {
+    if (op == '+') return a + b;
+    else if (op == '-') return a - b;
+    else if (op == '*') return a * b;
+    else if (op == '/') {
+        if (b == 0) throw runtime_error("Division by zero!");
+        return a / b;
     }
-};
+    throw invalid_argument("Invalid operator");
+}
+
+// Overloaded functions for double values
+double calculate(double a, double b, char op) {
+    if (op == '+') return a + b;
+    else if (op == '-') return a - b;
+    else if (op == '*') return a * b;
+    else if (op == '/') {
+        if (b == 0) throw runtime_error("Division by zero!");
+        return a / b;
+    }
+    throw invalid_argument("Invalid operator");
+}
 
 int main() {
-    Calculator calc;
-    cout << "Addition: " << calc.calculate(10, 5) << endl;
-    cout << "Multiplication: " << calc.calculate(10, 5, '*') << endl;
+    try {
+        int a, b;
+        double x, y;
+        char op;
+
+        cout << "Enter two integers and an operator (+, -, *, /): ";
+        cin >> a >> b >> op;
+        cout << "Result: " << calculate(a, b, op) << endl;
+
+        cout << "Enter two doubles and an operator (+, -, *, /): ";
+        cin >> x >> y >> op;
+        cout << "Result: " << calculate(x, y, op) << endl;
+
+    } catch (const exception& e) {
+        cout << "Error: " << e.what() << endl;
+    }
+
     return 0;
 }
+
