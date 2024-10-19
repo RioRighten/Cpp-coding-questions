@@ -1,26 +1,41 @@
 #include <iostream>
 using namespace std;
 
+// Abstract class Animal with a pure virtual function
 class Animal {
 public:
-    virtual void makeSound() const = 0;  // Pure virtual function
+    // Pure virtual function
+    virtual void makeSound() const = 0;  
 };
 
+// Derived class Cat that overrides makeSound()
 class Cat : public Animal {
 public:
-    void makeSound() const override { cout << "Meow\n"; }
+    void makeSound() const override {
+        cout << "Cat: Meow!" << endl;
+    }
 };
 
+// Derived class Dog that overrides makeSound()
 class Dog : public Animal {
 public:
-    void makeSound() const override { cout << "Woof\n"; }
+    void makeSound() const override {
+        cout << "Dog: Woof!" << endl;
+    }
 };
 
 int main() {
-    Animal* a1 = new Cat();
-    Animal* a2 = new Dog();
-    a1->makeSound();
-    a2->makeSound();
-    delete a1; delete a2;
+    // Using base class pointers to demonstrate polymorphism
+    Animal* animal1 = new Cat();
+    Animal* animal2 = new Dog();
+
+    // Calling the overridden functions through base class pointers
+    animal1->makeSound();
+    animal2->makeSound();
+
+    // Clean up dynamically allocated memory
+    delete animal1;
+    delete animal2;
+
     return 0;
 }
