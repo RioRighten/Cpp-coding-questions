@@ -1,22 +1,51 @@
 #include <iostream>
 using namespace std;
 
+// Function to find the maximum value in the array
+int findMax(int* arr, int size) {
+    int maxVal = arr[0];
+    for (int i = 1; i < size; ++i) {
+        if (arr[i] > maxVal) {
+            maxVal = arr[i];
+        }
+    }
+    return maxVal;
+}
+
+// Function to find the minimum value in the array
+int findMin(int* arr, int size) {
+    int minVal = arr[0];
+    for (int i = 1; i < size; ++i) {
+        if (arr[i] < minVal) {
+            minVal = arr[i];
+        }
+    }
+    return minVal;
+}
+
 int main() {
-    int n;
-    cout << "Enter size of array: ";
-    cin >> n;
+    int size;
 
-    int* arr = new int[n];
-    cout << "Enter " << n << " integers:\n";
-    for (int i = 0; i < n; ++i) cin >> arr[i];
+    cout << "Enter the number of elements: ";
+    cin >> size;
 
-    int max = arr[0], min = arr[0];
-    for (int i = 1; i < n; ++i) {
-        if (arr[i] > max) max = arr[i];
-        if (arr[i] < min) min = arr[i];
+    // Dynamically allocate memory for the array
+    int* arr = new int[size];
+
+    cout << "Enter " << size << " integers:\n";
+    for (int i = 0; i < size; ++i) {
+        cin >> arr[i];
     }
 
-    cout << "Max: " << max << ", Min: " << min << endl;
+    // Find and display the max and min values
+    int maxVal = findMax(arr, size);
+    int minVal = findMin(arr, size);
+
+    cout << "Maximum Value: " << maxVal << endl;
+    cout << "Minimum Value: " << minVal << endl;
+
+    // Free the allocated memory
     delete[] arr;
+
     return 0;
 }
