@@ -1,24 +1,60 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
+#include <algorithm>  // For std::sort
+#include <string>
 using namespace std;
 
-struct Student {
+// Class to represent a Student
+class Student {
+private:
     string name;
     int id;
-    double grade;
+    float grade;
+
+public:
+    Student(const string& n, int i, float g) : name(n), id(i), grade(g) {}
+
+    float getGrade() const {
+        return grade;
+    }
+
+    void display() const {
+        cout << "Name: " << name << ", ID: " << id << ", Grade: " << grade << endl;
+    }
 };
 
-bool compareGrades(const Student& s1, const Student& s2) {
-    return s1.grade > s2.grade;
+// Comparison function for sorting students based on grades
+bool compareByGrade(const Student& a, const Student& b) {
+    return a.getGrade() > b.getGrade();  // Sort in descending order
 }
 
 int main() {
-    vector<Student> students = {{"Alice", 1, 90}, {"Bob", 2, 85}, {"Charlie", 3, 95}};
-    sort(students.begin(), students.end(), compareGrades);
+    vector<Student> students;  // Vector to store student records
 
-    for (const auto& student : students) {
-        cout << student.name << " - " << student.grade << endl;
+    // Input student records
+    int numStudents;
+    cout << "Enter the number of students: ";
+    cin >> numStudents;
+
+    for (int i = 0; i < numStudents; ++i) {
+        string name;
+        int id;
+        float grade;
+
+        cout << "Enter name, ID, and grade for student " << (i + 1) << ": ";
+        cin >> name >> id >> grade;
+
+        students.emplace_back(name, id, grade);  // Add student to the vector
     }
+
+    // Sort students by grade
+    sort(students.begin(), students.end(), compareByGrade);
+
+    // Display sorted student records
+    cout << "\nSorted Student Records by Grades:\n";
+    for (const auto& student : students) {
+        student.display();
+    }
+
     return 0;
 }

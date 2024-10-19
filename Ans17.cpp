@@ -1,16 +1,29 @@
 #include <iostream>
+#include <stdexcept>  // For std::runtime_error
 using namespace std;
 
-double divide(int a, int b) {
-    if (b == 0) throw runtime_error("Division by zero!");
-    return (double)a / b;
+// Function to perform division
+double divide(double numerator, double denominator) {
+    if (denominator == 0) {
+        throw runtime_error("Error: Division by zero!");  // Throw an exception for division by zero
+    }
+    return numerator / denominator;
 }
 
 int main() {
+    double num, denom;
+
+    cout << "Enter numerator: ";
+    cin >> num;
+    cout << "Enter denominator: ";
+    cin >> denom;
+
     try {
-        cout << divide(10, 0) << endl;
-    } catch (const exception& e) {
-        cout << "Error: " << e.what() << endl;
+        double result = divide(num, denom);  // Attempt to perform division
+        cout << "Result: " << result << endl;
+    } catch (const runtime_error& e) {
+        cout << e.what() << endl;  // Catch and display the error message
     }
+
     return 0;
 }

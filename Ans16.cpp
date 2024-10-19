@@ -1,26 +1,43 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
+// Base class Character
 class Character {
 public:
-    virtual void attack() const = 0;
+    virtual void attack() = 0;  // Pure virtual function
+    virtual ~Character() {}  // Virtual destructor
 };
 
+// Derived class Warrior
 class Warrior : public Character {
 public:
-    void attack() const override { cout << "Warrior attacks with sword!\n"; }
+    void attack() override {
+        cout << "Warrior swings a sword!" << endl;
+    }
 };
 
+// Derived class Mage
 class Mage : public Character {
 public:
-    void attack() const override { cout << "Mage casts a spell!\n"; }
+    void attack() override {
+        cout << "Mage casts a fireball!" << endl;
+    }
 };
 
+// Function to demonstrate character attack
+void performAttack(Character* character) {
+    character->attack();
+}
+
 int main() {
-    Character* c1 = new Warrior();
-    Character* c2 = new Mage();
-    c1->attack();
-    c2->attack();
-    delete c1; delete c2;
+    // Creating characters
+    Warrior warrior;
+    Mage mage;
+
+    // Polymorphic behavior
+    performAttack(&warrior);  // Warrior attack
+    performAttack(&mage);     // Mage attack
+
     return 0;
 }

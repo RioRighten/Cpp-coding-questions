@@ -1,23 +1,54 @@
 #include <iostream>
 using namespace std;
 
-class ConfigManager {
-    static ConfigManager* instance;
+// Singleton class
+class ConfigurationManager {
+private:
+    static ConfigurationManager* instance;  // Static instance pointer
+    string configData;  // Example configuration data
 
-    ConfigManager() {}  // Private constructor
+    // Private constructor to prevent instantiation
+    ConfigurationManager() {
+        configData = "Default Configuration";
+    }
 
 public:
-    static ConfigManager* getInstance() {
-        if (!instance) instance = new ConfigManager();
+    // Delete copy constructor and assignment operator
+    ConfigurationManager(const ConfigurationManager&) = delete;
+    ConfigurationManager& operator=(const ConfigurationManager&) = delete;
+
+    // Static method to get the instance of the class
+    static ConfigurationManager* getInstance() {
+        if (!instance) {  // If instance doesn't exist, create one
+            instance = new ConfigurationManager();
+        }
         return instance;
     }
 
-    void showConfig() { cout << "Configuration settings\n"; }
+    void displayConfig() {
+        cout << "Configuration: " << configData << endl;
+    }
+
+    void setConfigData(const string& data) {
+        configData = data;
+    }
 };
 
-ConfigManager* ConfigManager::instance = nullptr;
+// Initialize static member
+ConfigurationManager* ConfigurationManager::instance = nullptr;
 
 int main() {
-    ConfigManager::getInstance()->showConfig();
+    // Accessing the singleton instance
+    ConfigurationManager* configManager = ConfigurationManager::getInstance();
+    configManager->displayConfig();  // Display default configuration
+
+    // Changing configuration data
+    configManager->setConfigData("Updated Configuration");
+    configManager->displayConfig();  // Display updated configuration
+
+    // Trying to create another instance
+    ConfigurationManager* anotherConfigManager = ConfigurationManager::getInstance();
+    anotherConfigManager->displayConfig();  // Should display the same updated configuration
+
     return 0;
 }

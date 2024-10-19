@@ -1,95 +1,118 @@
 #include <iostream>
-#include <fstream>
-#include <string>
 #include <vector>
+#include <string>
+#include <fstream>
+#include <algorithm>  // For std::find_if
 using namespace std;
 
+// Class to represent a Contact
 class Contact {
+private:
     string name;
     string phone;
-    string email;
 
 public:
-    Contact() {}
-    Contact(string n, string p, string e) : name(n), phone(p), email(e) {}
+    Contact(const string& n, const string& p) : name(n), phone(p) {}
 
-    string getName() const { return name; }
-    string getPhone() const { return phone; }
-    string getEmail() const { return email; }
+    string getName() const {
+        return name;
+    }
+
+    string getPhone() const {
+        return phone;
+    }
 
     void display() const {
-        cout << "Name: " << name << ", Phone: " << phone << ", Email: " << email << endl;
+        cout << "Name: " << name << ", Phone: " << phone << endl;
+    }
+
+    // Function to save the contact to a file
+    void saveToFile(ofstream& file) const {
+        file << name << "," << phone << endl;
     }
 };
 
-// Function to add a new contact to the file
-void addContact(const Contact& contact) {
-    ofstream outFile("contacts.txt", ios::app);  // Open in append mode
-    outFile << contact.getName() << "," << contact.getPhone() << "," << contact.getEmail() << endl;
-    outFile.close();
-}
+// Class to manage the Address Book
+class AddressBook {
+private:
+    vector<Contact> contacts;
+    const string filename = "contacts.txt";
 
-// Function to display all contacts
-void displayContacts() {
-    ifstream inFile("contacts.txt");
-    string line;
-    cout << "Contacts List:\n";
-    while (getline(inFile, line)) {
-        cout << line << endl;
-    }
-    inFile.close();
-}
-
-// Function to search for a contact by name
-void searchContact(const string& searchName) {
-    ifstream inFile("contacts.txt");
-    string name, phone, email;
-    bool found = false;
-
-    while (getline(inFile, name, ',') && getline(inFile, phone, ',') && getline(inFile, email)) {
-        if (name == searchName) {
-            cout << "Found: " << name << ", " << phone << ", " << email << endl;
-            found = true;
+    // Function to load contacts from a file
+    void loadContacts() {
+        ifstream file(filename);
+        if (file.is_open()) {
+            string line;
+            while (getline(file, line)) {
+                size_t commaPos = line.find(',');
+                if (commaPos != string::npos) {
+                    string name = line.substr(0, commaPos);
+                    string phone = line.substr(commaPos + 1);
+                    contacts.emplace_back(name, phone);
+                }
+            }
+            file.close();
         }
     }
 
-    if (!found) {
-        cout << "No contact found with name: " << searchName << endl;
+public:
+    AddressBook() {
+        loadContacts();  // Load contacts from the file when the address book is created
     }
-    inFile.close();
-}
 
-// Function to delete a contact by name
-void deleteContact(const string& deleteName) {
-    ifstream inFile("contacts.txt");
-    ofstream outFile("temp.txt");
-    string name, phone, email;
-    bool found = false;
+    void addContact(const Contact& contact) {
+        contacts.push_back(contact);
+        ofstream file(filename, ios::app);  // Open the file in append mode
+        contact.saveToFile(file);  // Save contact to the file
+        file.close();
+    }
 
-    while (getline(inFile, name, ',') && getline(inFile, phone, ',') && getline(inFile, email)) {
-        if (name != deleteName) {
-            outFile << name << "," << phone << "," << email << endl;
+    void displayContacts() const {
+        cout << "\nContacts List:\n";
+        for (const auto& contact : contacts) {
+            contact.display();
+        }
+    }
+
+    void searchContact(const string& name) const {
+        auto it = find_if(contacts.begin(), contacts.end(), [&name](const Contact& c) {
+            return c.getName() == name;
+        });
+
+        if (it != contacts.end()) {
+            cout << "Contact found:\n";
+            it->display();
         } else {
-            found = true;
+            cout << "Contact not found.\n";
         }
     }
 
-    inFile.close();
-    outFile.close();
+    void deleteContact(const string& name) {
+        auto it = remove_if(contacts.begin(), contacts.end(), [&name](const Contact& c) {
+            return c.getName() == name;
+        });
 
-    remove("contacts.txt");
-    rename("temp.txt", "contacts.txt");
+        if (it != contacts.end()) {
+            contacts.erase(it, contacts.end());
+            cout << "Contact \"" << name << "\" deleted.\n";
 
-    if (found) {
-        cout << "Contact deleted successfully.\n";
-    } else {
-        cout << "No contact found with name: " << deleteName << endl;
+            // Rewrite the contacts file without the deleted contact
+            ofstream file(filename);
+            for (const auto& contact : contacts) {
+                contact.saveToFile(file);
+            }
+            file.close();
+        } else {
+            cout << "Contact not found.\n";
+        }
     }
-}
+};
 
 int main() {
+    AddressBook addressBook;
+
     int choice;
-    string name, phone, email;
+    string name, phone;
 
     do {
         cout << "\nAddress Book Menu:\n";
@@ -100,40 +123,29 @@ int main() {
         cout << "5. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
-        cin.ignore();  // Clear the newline character from input buffer
 
         switch (choice) {
             case 1:
-                cout << "Enter Name: ";
-                getline(cin, name);
-                cout << "Enter Phone: ";
-                getline(cin, phone);
-                cout << "Enter Email: ";
-                getline(cin, email);
-                addContact(Contact(name, phone, email));
-                cout << "Contact added successfully.\n";
+                cout << "Enter name and phone number: ";
+                cin >> name >> phone;
+                addressBook.addContact(Contact(name, phone));
                 break;
-
             case 2:
-                displayContacts();
+                addressBook.displayContacts();
                 break;
-
             case 3:
                 cout << "Enter name to search: ";
-                getline(cin, name);
-                searchContact(name);
+                cin >> name;
+                addressBook.searchContact(name);
                 break;
-
             case 4:
                 cout << "Enter name to delete: ";
-                getline(cin, name);
-                deleteContact(name);
+                cin >> name;
+                addressBook.deleteContact(name);
                 break;
-
             case 5:
-                cout << "Exiting...\n";
+                cout << "Exiting the program.\n";
                 break;
-
             default:
                 cout << "Invalid choice! Please try again.\n";
         }

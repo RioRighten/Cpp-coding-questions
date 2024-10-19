@@ -1,30 +1,45 @@
 #include <iostream>
 using namespace std;
 
+// Interface for Payment
 class Payment {
 public:
-    virtual void processPayment() const = 0;  // Pure virtual function
+    virtual void processPayment(double amount) = 0;  // Pure virtual function
 };
 
+// Derived class for Credit Card Payment
 class CreditCardPayment : public Payment {
 public:
-    void processPayment() const override {
-        cout << "Processing Credit Card Payment\n";
+    void processPayment(double amount) override {
+        cout << "Processing credit card payment of $" << amount << endl;
+        // Logic for processing credit card payment
     }
 };
 
+// Derived class for PayPal Payment
 class PayPalPayment : public Payment {
 public:
-    void processPayment() const override {
-        cout << "Processing PayPal Payment\n";
+    void processPayment(double amount) override {
+        cout << "Processing PayPal payment of $" << amount << endl;
+        // Logic for processing PayPal payment
     }
 };
 
 int main() {
-    Payment* p1 = new CreditCardPayment();
-    Payment* p2 = new PayPalPayment();
-    p1->processPayment();
-    p2->processPayment();
-    delete p1; delete p2;
+    Payment* payment1 = new CreditCardPayment();  // Creating a CreditCardPayment object
+    Payment* payment2 = new PayPalPayment();      // Creating a PayPalPayment object
+
+    double amount;
+
+    cout << "Enter the amount to be processed: ";
+    cin >> amount;
+
+    payment1->processPayment(amount);  // Processing credit card payment
+    payment2->processPayment(amount);  // Processing PayPal payment
+
+    // Clean up dynamic memory
+    delete payment1;
+    delete payment2;
+
     return 0;
 }
